@@ -4,7 +4,6 @@ let uploadedPhotos = [];
 // Function to upload a photo to Imgur
 async function uploadToImgur(file, tags) {
     try {
-        const clientId = 'YOUR_IMGUR_CLIENT_ID_HERE';
         const formData = new FormData();
         formData.append('image', file);
         formData.append('title', tags);
@@ -12,7 +11,7 @@ async function uploadToImgur(file, tags) {
         const response = await fetch('https://api.imgur.com/3/image', {
             method: 'POST',
             headers: {
-                'Authorization': `Client-ID ${clientId}`
+                'Authorization': `Client-ID ${process.env.IMGUR_CLIENT_ID}`
             },
             body: formData
         });

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Photo Sharing Website</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Photo Sharing Website</h1>
+    <!-- You can add a logo or navigation links here -->
+  </header>
+
+  <main>
+    <section class="hero">
+      <h2>Share Your Photos</h2>
+      <p>Upload and discover amazing photos from our community.</p>
+    </section>
+
+    <section class="upload-section">
+      <h2>Upload a Photo</h2>
+      <form id="upload-form">
+        <input type="file" id="photo-input" required>
+        <input type="text" id="tags-input" placeholder="Add tags (separated by commas)">
+        <button type="submit">Upload</button>
+      </form>
+    </section>
+
+    <section class="photo-grid">
+      <h2>Recent Photos</h2>
+      <div id="photo-grid"></div>
+    </section>
+
+    <div id="modal" class="modal">
+      <span class="close-button">&times;</span>
+      <img class="modal-content" id="modal-image" alt="Fullsize photo">
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2024 Photo Sharing Website. All rights reserved.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

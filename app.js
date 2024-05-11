@@ -38,10 +38,12 @@ async function uploadToImgur(file, tags) {
 
 // Add an event listener to the form submission
 document.getElementById('upload-form').addEventListener('submit', async (event) => {
-    event.preventDefault();
+    event.preventDefault(); // Prevent default form submission behavior
     const photoInput = document.getElementById('photo-input');
     const tagsInput = document.getElementById('tags-input');
     await uploadToImgur(photoInput.files[0], tagsInput.value);
+});
+
 });
 
 // Display the uploaded photos

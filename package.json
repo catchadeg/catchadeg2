@@ -1,14 +1,13 @@
 {
-  "name": "photo-sharing-app",
+  "name": "your-project-name",
   "version": "1.0.0",
-  "description": "A simple photo sharing app",
-  "main": "app.js",
+  "description": "Description of your project",
+  "main": "app.js", // Entry point of your application
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js" // Script to start your application
   },
-  "author": "Your Name",
-  "license": "MIT",
   "dependencies": {
-    "express": "^4.17.1"
+    // Add any dependencies required by your project here
+    "express": "^4.17.1" // Example dependency
   }
 }

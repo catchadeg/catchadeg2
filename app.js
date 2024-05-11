@@ -1,3 +1,6 @@
+// Require the necessary modules
+const { fetch, FormData } = require('node-fetch');
+
 // Initialize array to store the uploaded photos
 let uploadedPhotos = [];
 

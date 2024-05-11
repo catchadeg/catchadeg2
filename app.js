@@ -1,7 +1,7 @@
 // Initialize array to store the uploaded photos
 let uploadedPhotos = [];
 
-// Upload a photo to Imgur
+// Function to upload a photo to Imgur
 async function uploadToImgur(file, tags) {
     try {
         const clientId = 'YOUR_IMGUR_CLIENT_ID_HERE';
@@ -37,13 +37,16 @@ async function uploadToImgur(file, tags) {
 }
 
 // Add an event listener to the form submission
-document.getElementById('upload-form').addEventListener('submit', async (event) => {
-    event.preventDefault(); // Prevent default form submission behavior
-    const photoInput = document.getElementById('photo-input');
-    const tagsInput = document.getElementById('tags-input');
-    await uploadToImgur(photoInput.files[0], tagsInput.value);
-});
-
+document.addEventListener('DOMContentLoaded', () => {
+    const uploadForm = document.getElementById('upload-form');
+    if (uploadForm) {
+        uploadForm.addEventListener('submit', async (event) => {
+            event.preventDefault(); // Prevent default form submission behavior
+            const photoInput = document.getElementById('photo-input');
+            const tagsInput = document.getElementById('tags-input');
+            await uploadToImgur(photoInput.files[0], tagsInput.value);
+        });
+    }
 });
 
 // Display the uploaded photos

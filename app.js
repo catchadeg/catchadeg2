@@ -1,86 +1,177 @@
-// Initialize array to store the uploaded photos
-let uploadedPhotos = [];
+// Get the canvas element
+const canvas = document.getElementById('game-canvas');
+const ctx = canvas.getContext('2d');
 
-// Upload a photo to Imgur
-async function uploadToImgur(file, tags) {
-  try {
-    const clientId = 'YOUR_IMGUR_CLIENT_ID_HERE';
-    const formData = new FormData();
-    formData.append('image', file);
-    formData.append('title', tags);
+// Game settings
+const GRID_SIZE = 20;
+const CELL_SIZE = 20;
+const INITIAL_SNAKE_LENGTH = 3;
+const INITIAL_SNAKE_DIRECTION = 'right';
+const GAME_SPEED = 100; // Milliseconds
 
-    const response = await fetch('https://api.imgur.com/3/image', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Client-ID ${clientId}`
-      },
-      body: formData
-    });
+// Game variables
+let snake = [];
+let food = {};
+let direction = INITIAL_SNAKE_DIRECTION;
+let score = 0;
+let gameInterval;
 
-    if (response.ok) {
-      const data = await response.json();
-      const photoInfo = {
-        url: data.data.link, // Use the Imgur URL
-        tags: tags
-      };
-      // Add the new photo at the end of the array
-      uploadedPhotos.push(photoInfo);
-      console.log('Photo uploaded to Imgur:', data.data.link);
-      alert('Photo uploaded successfully!');
-      displayPhotos(); // Display the uploaded photos
-    } else {
-      console.error('Error uploading photo to Imgur:', await response.text());
-    }
-  } catch (error) {
-    console.error('Error uploading photo:', error);
+// Initialize the game
+function initGame() {
+  // Initialize the snake
+  snake = [];
+  for (let i = 0; i < INITIAL_SNAKE_LENGTH; i++) {
+    snake.push({ x: i, y: 0 });
   }
+
+  // Initialize the food
+  createFood();
+
+  // Start the game loop
+  startGame();
 }
 
-// Display the uploaded photos
-function displayPhotos() {
-  const photoGrid = document.getElementById('photo-grid');
-  photoGrid.innerHTML = '';
+// Start the game loop
+function startGame() {
+  gameInterval = setInterval(gameLoop, GAME_SPEED);
+}
 
-  uploadedPhotos.forEach(photo => {
-    const photoCard = document.createElement('div');
-    photoCard.classList.add('photo-card');
+// Game loop
+function gameLoop() {
+  // Move the snake
+  moveSnake();
 
-    const img = document.createElement('img');
-    img.src = photo.url; // Use the Imgur URL
-    img.alt = photo.tags;
+  // Check for collisions
+  if (isGameOver()) {
+    endGame();
+    return;
+  }
 
-    const h3 = document.createElement('h3');
-    h3.textContent = photo.tags;
+  // Check if the snake has eaten the food
+  if (snake[0].x === food.x && snake[0].y === food.y) {
+    growSnake();
+    createFood();
+    updateScore();
+  }
 
-    photoCard.appendChild(img);
-    photoCard.appendChild(h3);
-    photoGrid.appendChild(photoCard);
+  // Render the game
+  renderGame();
+}
+
+// Move the snake
+function moveSnake() {
+  const head = { ...snake[0] };
+  switch (direction) {
+    case 'up':
+      head.y--;
+      break;
+    case 'down':
+      head.y++;
+      break;
+    case 'left':
+      head.x--;
+      break;
+    case 'right':
+      head.x++;
+      break;
+  }
+
+  snake.unshift(head);
+  snake.pop();
+}
+
+// Check for game over conditions
+function isGameOver() {
+  const head = snake[0];
+  if (
+    head.x < 0 ||
+    head.x >= GRID_SIZE ||
+    head.y < 0 ||
+    head.y >= GRID_SIZE ||
+    snake.slice(1).some((segment) => segment.x === head.x && segment.y === head.y)
+  ) {
+    return true;
+  }
+  return false;
+}
+
+// End the game
+function endGame() {
+  clearInterval(gameInterval);
+  alert(`Game Over! Your score is ${score}`);
+  initGame();
+}
+
+// Grow the snake
+function growSnake() {
+  const tail = { ...snake[snake.length - 1] };
+  switch (direction) {
+    case 'up':
+      tail.y++;
+      break;
+    case 'down':
+      tail.y--;
+      break;
+    case 'left':
+      tail.x++;
+      break;
+    case 'right':
+      tail.x--;
+      break;
+  }
+  snake.push(tail);
+  score++;
+}
+
+// Create food
+function createFood() {
+  food = {
+    x: Math.floor(Math.random() * GRID_SIZE),
+    y: Math.floor(Math.random() * GRID_SIZE),
+  };
+}
+
+// Update the score
+function updateScore() {
+  document.getElementById('score').textContent = score;
+}
+
+// Render the game
+function renderGame() {
+  // Clear the canvas
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Draw the snake
+  snake.forEach((segment) => {
+    ctx.fillRect(segment.x * CELL_SIZE, segment.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
   });
+
+  // Draw the food
+  ctx.fillRect(food.x * CELL_SIZE, food.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
 }
 
-// Fetch photos from the server and display them on the website
-async function fetchAndDisplayPhotos() {
-  try {
-    const response = await fetch('/photos');
-    if (response.ok) {
-      const photos = await response.json();
-      uploadedPhotos = photos; // Assign fetched photos to uploadedPhotos array
-      displayPhotos(); // Display the fetched photos
-    } else {
-      console.error('Failed to fetch photos:', response.statusText);
-    }
-  } catch (error) {
-    console.error('Error fetching photos:', error);
+// Handle user input
+document.addEventListener('keydown', (event) => {
+  switch (event.key) {
+    case 'ArrowUp':
+      if (direction !== 'down') direction = 'up';
+      break;
+    case 'ArrowDown':
+      if (direction !== 'up') direction = 'down';
+      break;
+    case 'ArrowLeft':
+      if (direction !== 'right') direction = 'left';
+      break;
+    case 'ArrowRight':
+      if (direction !== 'left') direction = 'right';
+      break;
   }
-}
-
-// Call fetchAndDisplayPhotos when the page is loaded
-document.addEventListener('DOMContentLoaded', fetchAndDisplayPhotos);
-
-// Add an event listener to the form submission
-document.getElementById('upload-form').addEventListener('submit', async (event) => {
-  event.preventDefault();
-  const photoInput = document.getElementById('photo-input');
-  const tagsInput = document.getElementById('tags-input');
-  await uploadToImgur(photoInput.files[0], tagsInput.value);
 });
+
+// Restart the game
+document.getElementById('restart-btn').addEventListener('click', () => {
+  initGame();
+});
+
+// Start the game
+initGame();
